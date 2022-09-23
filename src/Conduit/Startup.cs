@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using AutoMapper;
+using System.Text.Json.Serialization;
 using Conduit.Features.Profiles;
 using Conduit.Infrastructure;
 using Conduit.Infrastructure.Errors;
@@ -107,7 +107,7 @@ namespace Conduit
                 })
                 .AddJsonOptions(opt =>
                 {
-                    opt.JsonSerializerOptions.IgnoreNullValues = true;
+                    opt.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 })
                 .AddFluentValidation(cfg =>
                 {

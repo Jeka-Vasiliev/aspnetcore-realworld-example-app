@@ -54,7 +54,9 @@ namespace Conduit.Infrastructure.Errors
                     break;
                 case Exception e:
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+#pragma warning disable CA1848
                     logger.LogError(e, "Unhandled Exception");
+#pragma warning restore CA1848
                     result = JsonSerializer.Serialize(new
                     {
                         errors = localizer[Constants.InternalServerError].Value
