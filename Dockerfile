@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0.401 as build
 
 WORKDIR /build
 COPY . .
-RUN dotnet run -p build/build.csproj
+RUN dotnet run --project build/build.csproj
 
 #runtime container
 FROM mcr.microsoft.com/dotnet/aspnet:6.0.9-alpine3.16
