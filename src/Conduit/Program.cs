@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 // read database configuration (database provider + database connection) from environment variables
 var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()
     .Build();
 

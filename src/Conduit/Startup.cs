@@ -70,32 +70,32 @@ namespace Conduit
             // Inject an implementation of ISwaggerProvider with defaulted settings applied
             services.AddSwaggerGen(x =>
             {
-                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please insert JWT with Bearer into field",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    BearerFormat = "JWT"
-                });
+                x.AddSecurityDefinition("Bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header,
+                        Description = "Please insert JWT with Bearer into field",
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.ApiKey,
+                        BearerFormat = "JWT"
+                    });
 
                 x.SupportNonNullableReferenceTypes();
 
                 x.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
-                    {   new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-                    },
-                    Array.Empty<string>()}
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        Array.Empty<string>()
+                    }
                 });
                 x.SwaggerDoc("v1", new OpenApiInfo { Title = "RealWorld API", Version = "v1" });
                 x.CustomSchemaIds(y => y.FullName);
                 x.DocInclusionPredicate((version, apiDescription) => true);
-                x.TagActionsBy(y => new List<string>()
-                {
-                    y.GroupName ?? throw new InvalidOperationException()
-                });
+                x.TagActionsBy(y => new List<string>() { y.GroupName ?? throw new InvalidOperationException() });
             });
 
             services.AddCors();
@@ -123,6 +123,9 @@ namespace Conduit
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddJwt();
+
+            services.AddReverseProxy()
+                .LoadFromConfig(_config.GetSection("ReverseProxy"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -151,6 +154,12 @@ namespace Conduit
             app.UseSwaggerUI(x =>
             {
                 x.SwaggerEndpoint("/swagger/v1/swagger.json", "RealWorld API V1");
+            });
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapReverseProxy();
             });
 
             app.ApplicationServices.GetRequiredService<ConduitContext>().Database.EnsureCreated();
