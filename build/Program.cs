@@ -39,7 +39,7 @@ Target(Clean,
 Target(Format, () =>
 {
     Run("dotnet", "tool restore");
-    Run("dotnet", "format --check");
+    Run("dotnet", "format");
 });
 
 Target(Build, DependsOn(Format), () => Run("dotnet", "build . -c Release"));
