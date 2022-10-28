@@ -17,12 +17,10 @@ namespace Conduit.IntegrationTests
         private readonly ServiceProvider _provider;
         private readonly string DbName = Guid.NewGuid() + ".db";
 
-        static SliceFixture()
-        {
+        static SliceFixture() =>
             Config = new ConfigurationBuilder()
-               .AddEnvironmentVariables()
-               .Build();
-        }
+                .AddEnvironmentVariables()
+                .Build();
 
         public SliceFixture()
         {
@@ -41,15 +39,9 @@ namespace Conduit.IntegrationTests
             _scopeFactory = _provider.GetService<IServiceScopeFactory>();
         }
 
-        public ConduitContext GetDbContext()
-        {
-            return _provider.GetRequiredService<ConduitContext>();
-        }
+        public ConduitContext GetDbContext() => _provider.GetRequiredService<ConduitContext>();
 
-        public void Dispose()
-        {
-            File.Delete(DbName);
-        }
+        public void Dispose() => File.Delete(DbName);
 
         public async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
         {
@@ -67,39 +59,28 @@ namespace Conduit.IntegrationTests
             }
         }
 
-        public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
-        {
-            return ExecuteScopeAsync(sp =>
+        public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request) =>
+            ExecuteScopeAsync(sp =>
             {
                 var mediator = sp.GetService<IMediator>();
 
                 return mediator.Send(request);
             });
-        }
 
-        public Task SendAsync(IRequest request)
-        {
-            return ExecuteScopeAsync(sp =>
+        public Task SendAsync(IRequest request) =>
+            ExecuteScopeAsync(sp =>
             {
                 var mediator = sp.GetService<IMediator>();
 
                 return mediator.Send(request);
             });
-        }
 
-        public Task ExecuteDbContextAsync(Func<ConduitContext, Task> action)
-        {
-            return ExecuteScopeAsync(sp => action(sp.GetService<ConduitContext>()));
-        }
+        public Task ExecuteDbContextAsync(Func<ConduitContext, Task> action) => ExecuteScopeAsync(sp => action(sp.GetService<ConduitContext>()));
 
-        public Task<T> ExecuteDbContextAsync<T>(Func<ConduitContext, Task<T>> action)
-        {
-            return ExecuteScopeAsync(sp => action(sp.GetService<ConduitContext>()));
-        }
+        public Task<T> ExecuteDbContextAsync<T>(Func<ConduitContext, Task<T>> action) => ExecuteScopeAsync(sp => action(sp.GetService<ConduitContext>()));
 
-        public Task InsertAsync(params object[] entities)
-        {
-            return ExecuteDbContextAsync(db =>
+        public Task InsertAsync(params object[] entities) =>
+            ExecuteDbContextAsync(db =>
             {
                 foreach (var entity in entities)
                 {
@@ -107,6 +88,5 @@ namespace Conduit.IntegrationTests
                 }
                 return db.SaveChangesAsync();
             });
-        }
     }
 }

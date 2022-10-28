@@ -15,20 +15,14 @@ namespace Conduit.Features.Articles
 
         public class CommandValidator : AbstractValidator<Command>
         {
-            public CommandValidator()
-            {
-                RuleFor(x => x.Slug).NotNull().NotEmpty();
-            }
+            public CommandValidator() => RuleFor(x => x.Slug).NotNull().NotEmpty();
         }
 
         public class QueryHandler : IRequestHandler<Command>
         {
             private readonly ConduitContext _context;
 
-            public QueryHandler(ConduitContext context)
-            {
-                _context = context;
-            }
+            public QueryHandler(ConduitContext context) => _context = context;
 
             public async Task<Unit> Handle(Command message, CancellationToken cancellationToken)
             {
