@@ -68,4 +68,3 @@ Target(Publish, DependsOn(Test),
 
 Target("default", DependsOn(Publish), () => Console.WriteLine("Done!"));
 await RunTargetsAndExitAsync(args);
-

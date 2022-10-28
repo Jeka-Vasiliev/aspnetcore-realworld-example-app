@@ -3,24 +3,24 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 
-namespace Conduit.Features.Profiles
+namespace Conduit.Features.Profiles;
+
+public class Details
 {
-    public class Details
+    public record Query(string Username) : IRequest<ProfileEnvelope>;
+
+    public class QueryValidator : AbstractValidator<Query>
     {
-        public record Query(string Username) : IRequest<ProfileEnvelope>;
+        public QueryValidator() => RuleFor(x => x.Username).NotEmpty();
+    }
 
-        public class QueryValidator : AbstractValidator<Query>
-        {
-            public QueryValidator() => RuleFor(x => x.Username).NotEmpty();
-        }
+    public class QueryHandler : IRequestHandler<Query, ProfileEnvelope>
+    {
+        private readonly IProfileReader _profileReader;
 
-        public class QueryHandler : IRequestHandler<Query, ProfileEnvelope>
-        {
-            private readonly IProfileReader _profileReader;
+        public QueryHandler(IProfileReader profileReader) => _profileReader = profileReader;
 
-            public QueryHandler(IProfileReader profileReader) => _profileReader = profileReader;
-
-            public Task<ProfileEnvelope> Handle(Query message, CancellationToken cancellationToken) => _profileReader.ReadProfile(message.Username, cancellationToken);
-        }
+        public Task<ProfileEnvelope> Handle(Query message, CancellationToken cancellationToken) =>
+            _profileReader.ReadProfile(message.Username, cancellationToken);
     }
 }

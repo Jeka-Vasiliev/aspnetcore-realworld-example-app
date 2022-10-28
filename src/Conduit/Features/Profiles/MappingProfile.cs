@@ -1,9 +1,9 @@
 using AutoMapper;
+using Conduit.Domain;
 
-namespace Conduit.Features.Profiles
+namespace Conduit.Features.Profiles;
+
+public class MappingProfile : AutoMapper.Profile
 {
-    public class MappingProfile : AutoMapper.Profile
-    {
-        public MappingProfile() => CreateMap<Domain.Person, Profile>(MemberList.None);
-    }
+    public MappingProfile() => CreateMap<Person, Profile>(MemberList.None);
 }

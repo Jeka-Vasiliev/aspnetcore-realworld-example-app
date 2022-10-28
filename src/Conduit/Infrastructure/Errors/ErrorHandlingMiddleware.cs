@@ -6,66 +6,59 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace Conduit.Infrastructure.Errors
+namespace Conduit.Infrastructure.Errors;
+
+public class ErrorHandlingMiddleware
 {
-    public class ErrorHandlingMiddleware
+    private readonly IStringLocalizer<ErrorHandlingMiddleware> _localizer;
+    private readonly ILogger<ErrorHandlingMiddleware> _logger;
+    private readonly RequestDelegate _next;
+
+    public ErrorHandlingMiddleware(
+        RequestDelegate next,
+        IStringLocalizer<ErrorHandlingMiddleware> localizer,
+        ILogger<ErrorHandlingMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ErrorHandlingMiddleware> _logger;
-        private readonly IStringLocalizer<ErrorHandlingMiddleware> _localizer;
+        _next = next;
+        _logger = logger;
+        _localizer = localizer;
+    }
 
-        public ErrorHandlingMiddleware(
-            RequestDelegate next,
-            IStringLocalizer<ErrorHandlingMiddleware> localizer,
-            ILogger<ErrorHandlingMiddleware> logger)
+    public async Task Invoke(HttpContext context)
+    {
+        try
         {
-            _next = next;
-            _logger = logger;
-            _localizer = localizer;
+            await _next(context);
         }
-
-        public async Task Invoke(HttpContext context)
+        catch (Exception ex)
         {
-            try
-            {
-                await _next(context);
-            }
-            catch (Exception ex)
-            {
-                await HandleExceptionAsync(context, ex, _logger, _localizer);
-            }
+            await HandleExceptionAsync(context, ex, _logger, _localizer);
         }
+    }
 
-        private static async Task HandleExceptionAsync(
-            HttpContext context,
-            Exception exception,
-            ILogger<ErrorHandlingMiddleware> logger,
-            IStringLocalizer<ErrorHandlingMiddleware> localizer)
+    private static async Task HandleExceptionAsync(
+        HttpContext context,
+        Exception exception,
+        ILogger<ErrorHandlingMiddleware> logger,
+        IStringLocalizer<ErrorHandlingMiddleware> localizer)
+    {
+        string? result = null;
+        switch (exception)
         {
-            string? result = null;
-            switch (exception)
-            {
-                case RestException re:
-                    context.Response.StatusCode = (int)re.Code;
-                    result = JsonSerializer.Serialize(new
-                    {
-                        errors = re.Errors
-                    });
-                    break;
-                case Exception e:
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            case RestException re:
+                context.Response.StatusCode = (int)re.Code;
+                result = JsonSerializer.Serialize(new {errors = re.Errors});
+                break;
+            case Exception e:
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 #pragma warning disable CA1848
-                    logger.LogError(e, "Unhandled Exception");
+                logger.LogError(e, "Unhandled Exception");
 #pragma warning restore CA1848
-                    result = JsonSerializer.Serialize(new
-                    {
-                        errors = localizer[Constants.InternalServerError].Value
-                    });
-                    break;
-            }
-
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(result ?? "{}");
+                result = JsonSerializer.Serialize(new {errors = localizer[Constants.InternalServerError].Value});
+                break;
         }
+
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(result ?? "{}");
     }
 }

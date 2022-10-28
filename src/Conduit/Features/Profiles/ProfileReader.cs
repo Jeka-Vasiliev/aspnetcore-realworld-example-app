@@ -3,52 +3,53 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Conduit.Domain;
 using Conduit.Infrastructure;
 using Conduit.Infrastructure.Errors;
 using Microsoft.EntityFrameworkCore;
 
-namespace Conduit.Features.Profiles
+namespace Conduit.Features.Profiles;
+
+public class ProfileReader : IProfileReader
 {
-    public class ProfileReader : IProfileReader
+    private readonly ConduitContext _context;
+    private readonly ICurrentUserAccessor _currentUserAccessor;
+    private readonly IMapper _mapper;
+
+    public ProfileReader(ConduitContext context, ICurrentUserAccessor currentUserAccessor, IMapper mapper)
     {
-        private readonly ConduitContext _context;
-        private readonly ICurrentUserAccessor _currentUserAccessor;
-        private readonly IMapper _mapper;
+        _context = context;
+        _currentUserAccessor = currentUserAccessor;
+        _mapper = mapper;
+    }
 
-        public ProfileReader(ConduitContext context, ICurrentUserAccessor currentUserAccessor, IMapper mapper)
+    public async Task<ProfileEnvelope> ReadProfile(string username, CancellationToken cancellationToken)
+    {
+        var currentUserName = _currentUserAccessor.GetCurrentUsername();
+
+        var person = await _context.Persons.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Username == username, cancellationToken);
+
+        if (person == null)
         {
-            _context = context;
-            _currentUserAccessor = currentUserAccessor;
-            _mapper = mapper;
+            throw new RestException(HttpStatusCode.NotFound, new {User = Constants.NOT_FOUND});
         }
 
-        public async Task<ProfileEnvelope> ReadProfile(string username, CancellationToken cancellationToken)
+        var profile = _mapper.Map<Person, Profile>(person);
+
+        if (currentUserName != null)
         {
-            var currentUserName = _currentUserAccessor.GetCurrentUsername();
+            var currentPerson = await _context.Persons
+                .Include(x => x.Following)
+                .Include(x => x.Followers)
+                .FirstOrDefaultAsync(x => x.Username == currentUserName, cancellationToken);
 
-            var person = await _context.Persons.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Username == username, cancellationToken);
-
-            if (person == null)
+            if (currentPerson.Followers.Any(x => x.TargetId == person.PersonId))
             {
-                throw new RestException(HttpStatusCode.NotFound, new { User = Constants.NOT_FOUND });
+                profile.IsFollowed = true;
             }
-            var profile = _mapper.Map<Domain.Person, Profile>(person);
-
-            if (currentUserName != null)
-            {
-                var currentPerson = await _context.Persons
-                    .Include(x => x.Following)
-                    .Include(x => x.Followers)
-                    .FirstOrDefaultAsync(x => x.Username == currentUserName, cancellationToken);
-
-                if (currentPerson.Followers.Any(x => x.TargetId == person.PersonId))
-                {
-                    profile.IsFollowed = true;
-                }
-            }
-
-            return new ProfileEnvelope(profile);
         }
+
+        return new ProfileEnvelope(profile);
     }
 }

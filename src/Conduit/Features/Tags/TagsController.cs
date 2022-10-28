@@ -3,16 +3,16 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Conduit.Features.Tags
+namespace Conduit.Features.Tags;
+
+[Route("tags")]
+public class TagsController : Controller
 {
-    [Route("tags")]
-    public class TagsController : Controller
-    {
-        private readonly IMediator _mediator;
+    private readonly IMediator _mediator;
 
-        public TagsController(IMediator mediator) => _mediator = mediator;
+    public TagsController(IMediator mediator) => _mediator = mediator;
 
-        [HttpGet]
-        public Task<TagsEnvelope> Get(CancellationToken cancellationToken) => _mediator.Send(new List.Query(), cancellationToken);
-    }
+    [HttpGet]
+    public Task<TagsEnvelope> Get(CancellationToken cancellationToken) =>
+        _mediator.Send(new List.Query(), cancellationToken);
 }
