@@ -153,6 +153,7 @@ public class Startup
             x.SwaggerEndpoint("/swagger/v1/swagger.json", "RealWorld API V1");
         });
 
+        app.UsePathBase(new PathString("/api"));
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
