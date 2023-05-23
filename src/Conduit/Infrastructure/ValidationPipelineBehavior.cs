@@ -15,8 +15,9 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
     public ValidationPipelineBehavior(IEnumerable<IValidator<TRequest>> validators) =>
         _validators = validators.ToList();
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
-        RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken
+    )
     {
         var context = new ValidationContext<TRequest>(request);
         var failures = _validators

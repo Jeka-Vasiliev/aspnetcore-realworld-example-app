@@ -11,14 +11,14 @@ namespace Conduit.Features.Articles;
 
 public class Delete
 {
-    public record Command(string Slug) : IRequest;
+    public record Command(string Slug) : IRequest<Unit>;
 
     public class CommandValidator : AbstractValidator<Command>
     {
         public CommandValidator() => RuleFor(x => x.Slug).NotNull().NotEmpty();
     }
 
-    public class QueryHandler : IRequestHandler<Command>
+    public class QueryHandler : IRequestHandler<Command, Unit>
     {
         private readonly ConduitContext _context;
 
@@ -31,7 +31,7 @@ public class Delete
 
             if (article == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {Article = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { Article = Constants.NOT_FOUND });
             }
 
             _context.Articles.Remove(article);

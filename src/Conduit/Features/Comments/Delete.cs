@@ -12,14 +12,14 @@ namespace Conduit.Features.Comments;
 
 public class Delete
 {
-    public record Command(string Slug, int Id) : IRequest;
+    public record Command(string Slug, int Id) : IRequest<Unit>;
 
     public class CommandValidator : AbstractValidator<Command>
     {
         public CommandValidator() => RuleFor(x => x.Slug).NotNull().NotEmpty();
     }
 
-    public class QueryHandler : IRequestHandler<Command>
+    public class QueryHandler : IRequestHandler<Command, Unit>
     {
         private readonly ConduitContext _context;
 
@@ -33,13 +33,13 @@ public class Delete
 
             if (article == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {Article = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { Article = Constants.NOT_FOUND });
             }
 
             var comment = article.Comments.FirstOrDefault(x => x.CommentId == message.Id);
             if (comment == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {Comment = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { Comment = Constants.NOT_FOUND });
             }
 
             _context.Comments.Remove(comment);

@@ -10,17 +10,17 @@ namespace Conduit.Infrastructure;
 /// </summary>
 /// <typeparam name="TRequest"></typeparam>
 /// <typeparam name="TResponse"></typeparam>
-public class DBContextTransactionPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class DbContextTransactionPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private readonly ConduitContext _context;
 
-    public DBContextTransactionPipelineBehavior(ConduitContext context) => _context = context;
+    public DbContextTransactionPipelineBehavior(ConduitContext context) => _context = context;
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
-        RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
-        var result = default(TResponse);
+        TResponse? result;
 
         try
         {
