@@ -6,6 +6,7 @@ using Conduit.Features.Profiles;
 using Conduit.Infrastructure;
 using Conduit.Infrastructure.Errors;
 using Conduit.Infrastructure.Security;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -84,15 +85,15 @@ public class Startup
                 {
                     new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Bearer"}
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
                     },
                     Array.Empty<string>()
                 }
             });
-            x.SwaggerDoc("v1", new OpenApiInfo {Title = "RealWorld API", Version = "v1"});
+            x.SwaggerDoc("v1", new OpenApiInfo { Title = "RealWorld API", Version = "v1" });
             x.CustomSchemaIds(y => y.FullName);
             x.DocInclusionPredicate((version, apiDescription) => true);
-            x.TagActionsBy(y => new List<string> {y.GroupName ?? throw new InvalidOperationException()});
+            x.TagActionsBy(y => new List<string> { y.GroupName ?? throw new InvalidOperationException() });
         });
 
         services.AddCors();
@@ -105,11 +106,11 @@ public class Startup
             .AddJsonOptions(opt =>
             {
                 opt.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            })
-            .AddFluentValidation(cfg =>
-            {
-                cfg.RegisterValidatorsFromAssemblyContaining<Startup>();
             });
+
+        services.AddFluentValidationAutoValidation();
+        services.AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<Startup>();
 
         services.AddAutoMapper(GetType().Assembly);
 
