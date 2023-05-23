@@ -22,7 +22,7 @@ public class LoginTests : SliceFixture
         };
         await InsertAsync(person);
 
-        var command = new Login.Command(new Login.UserData {Email = "email", Password = "password"});
+        var command = new Login.Command(new Login.UserData { Email = "email", Password = "password" });
 
         var user = await SendAsync(command);
 

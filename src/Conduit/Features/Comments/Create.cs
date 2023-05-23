@@ -43,7 +43,7 @@ public class Create
 
             if (article == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {Article = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { Article = Constants.NOT_FOUND });
             }
 
             var author = await _context.Persons.FirstAsync(x => x.Username == _currentUserAccessor.GetCurrentUsername(),

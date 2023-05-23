@@ -32,7 +32,7 @@ public class ProfileReader : IProfileReader
 
         if (person == null)
         {
-            throw new RestException(HttpStatusCode.NotFound, new {User = Constants.NOT_FOUND});
+            throw new RestException(HttpStatusCode.NotFound, new { User = Constants.NOT_FOUND });
         }
 
         var profile = _mapper.Map<Person, Profile>(person);

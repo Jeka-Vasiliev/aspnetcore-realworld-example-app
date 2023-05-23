@@ -50,7 +50,7 @@ public class Edit
 
             if (article == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {Article = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { Article = Constants.NOT_FOUND });
             }
 
             article.Description = message.Model.Article.Description ?? article.Description;
@@ -99,7 +99,7 @@ public class Edit
                 {
                     at = new ArticleTag
                     {
-                        Article = article, ArticleId = article.ArticleId, Tag = new Tag {TagId = tag}, TagId = tag
+                        Article = article, ArticleId = article.ArticleId, Tag = new Tag { TagId = tag }, TagId = tag
                     };
                     articleTagsToCreate.Add(at);
                 }

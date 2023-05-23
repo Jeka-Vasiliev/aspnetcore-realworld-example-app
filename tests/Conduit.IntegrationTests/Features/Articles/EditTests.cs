@@ -16,7 +16,7 @@ public class EditTests : SliceFixture
             Title = "Test article dsergiu77",
             Description = "Description of the test article",
             Body = "Body of the test article",
-            TagList = new[] {"tag1", "tag2"}
+            TagList = new[] { "tag1", "tag2" }
         });
 
         var createdArticle = await ArticleHelpers.CreateArticle(this, createCommand);
@@ -30,7 +30,7 @@ public class EditTests : SliceFixture
                     Body = "Updated" + createdArticle.Body
                 }), createdArticle.Slug);
         // remove the first tag and add a new tag
-        command.Model.Article.TagList = new[] {createdArticle.TagList[1], "tag3"};
+        command.Model.Article.TagList = new[] { createdArticle.TagList[1], "tag3" };
 
         var dbContext = GetDbContext();
 

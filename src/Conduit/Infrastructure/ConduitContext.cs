@@ -26,7 +26,7 @@ public class ConduitContext : DbContext
     {
         modelBuilder.Entity<ArticleTag>(b =>
         {
-            b.HasKey(t => new {t.ArticleId, t.TagId});
+            b.HasKey(t => new { t.ArticleId, t.TagId });
 
             b.HasOne(pt => pt.Article)
                 .WithMany(p => p!.ArticleTags)
@@ -39,7 +39,7 @@ public class ConduitContext : DbContext
 
         modelBuilder.Entity<ArticleFavorite>(b =>
         {
-            b.HasKey(t => new {t.ArticleId, t.PersonId});
+            b.HasKey(t => new { t.ArticleId, t.PersonId });
 
             b.HasOne(pt => pt.Article)
                 .WithMany(p => p!.ArticleFavorites)
@@ -52,7 +52,7 @@ public class ConduitContext : DbContext
 
         modelBuilder.Entity<FollowedPeople>(b =>
         {
-            b.HasKey(t => new {t.ObserverId, t.TargetId});
+            b.HasKey(t => new { t.ObserverId, t.TargetId });
 
             // we need to add OnDelete RESTRICT otherwise for the SqlServer database provider, 
             // app.ApplicationServices.GetRequiredService<ConduitContext>().Database.EnsureCreated(); throws the following error:

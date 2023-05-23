@@ -43,7 +43,7 @@ public class Details
 
             if (person == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {User = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { User = Constants.NOT_FOUND });
             }
 
             var user = _mapper.Map<Person, User>(person);

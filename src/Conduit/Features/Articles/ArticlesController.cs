@@ -32,7 +32,7 @@ public class ArticlesController : Controller
         [FromQuery] int? limit,
         [FromQuery] int? offset,
         CancellationToken cancellationToken
-    ) => _mediator.Send(new List.Query(tag, author, favorited, limit, offset) {IsFeed = true}, cancellationToken);
+    ) => _mediator.Send(new List.Query(tag, author, favorited, limit, offset) { IsFeed = true }, cancellationToken);
 
     [HttpGet("{slug}")]
     public Task<ArticleEnvelope> Get(string slug, CancellationToken cancellationToken) =>

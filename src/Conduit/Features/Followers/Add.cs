@@ -41,7 +41,7 @@ public class Add
 
             if (target == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {User = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { User = Constants.NOT_FOUND });
             }
 
             var observer =

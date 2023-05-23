@@ -15,7 +15,7 @@ public class CreateTests : SliceFixture
             Title = "Test article dsergiu77",
             Description = "Description of the test article",
             Body = "Body of the test article",
-            TagList = new[] {"tag1", "tag2"}
+            TagList = new[] { "tag1", "tag2" }
         });
 
         var article = await ArticleHelpers.CreateArticle(this, command);

@@ -47,14 +47,14 @@ public class ErrorHandlingMiddleware
         {
             case RestException re:
                 context.Response.StatusCode = (int)re.Code;
-                result = JsonSerializer.Serialize(new {errors = re.Errors});
+                result = JsonSerializer.Serialize(new { errors = re.Errors });
                 break;
             case Exception e:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 #pragma warning disable CA1848
                 logger.LogError(e, "Unhandled Exception");
 #pragma warning restore CA1848
-                result = JsonSerializer.Serialize(new {errors = localizer[Constants.InternalServerError].Value});
+                result = JsonSerializer.Serialize(new { errors = localizer[Constants.InternalServerError].Value });
                 break;
         }
 

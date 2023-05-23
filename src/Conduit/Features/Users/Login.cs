@@ -57,14 +57,14 @@ public class Login
                 .SingleOrDefaultAsync(cancellationToken);
             if (person == null)
             {
-                throw new RestException(HttpStatusCode.Unauthorized, new {Error = "Invalid email / password."});
+                throw new RestException(HttpStatusCode.Unauthorized, new { Error = "Invalid email / password." });
             }
 
             if (!person.Hash.SequenceEqual(
                     await _passwordHasher.Hash(message.User.Password ?? throw new InvalidOperationException(),
                         person.Salt)))
             {
-                throw new RestException(HttpStatusCode.Unauthorized, new {Error = "Invalid email / password."});
+                throw new RestException(HttpStatusCode.Unauthorized, new { Error = "Invalid email / password." });
             }
 
             var user = _mapper.Map<Person, User>(person);

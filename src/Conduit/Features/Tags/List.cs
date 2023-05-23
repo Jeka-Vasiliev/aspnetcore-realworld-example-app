@@ -21,7 +21,10 @@ public class List
         public async Task<TagsEnvelope> Handle(Query message, CancellationToken cancellationToken)
         {
             var tags = await _context.Tags.OrderBy(x => x.TagId).AsNoTracking().ToListAsync(cancellationToken);
-            return new TagsEnvelope {Tags = tags?.Select(x => x.TagId ?? string.Empty).ToList() ?? new List<string>()};
+            return new TagsEnvelope
+            {
+                Tags = tags?.Select(x => x.TagId ?? string.Empty).ToList() ?? new List<string>()
+            };
         }
     }
 }
