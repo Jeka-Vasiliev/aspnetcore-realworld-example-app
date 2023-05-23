@@ -37,17 +37,17 @@ public class Add
 
             if (article == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {Article = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { Article = Constants.NOT_FOUND });
             }
 
             var person =
-                await _context.Persons.FirstOrDefaultAsync(x => x.Username == _currentUserAccessor.GetCurrentUsername(),
+                await _context.Persons.FirstAsync(x => x.Username == _currentUserAccessor.GetCurrentUsername(),
                     cancellationToken);
 
             var favorite = await _context.ArticleFavorites.FirstOrDefaultAsync(
                 x => x.ArticleId == article.ArticleId && x.PersonId == person.PersonId, cancellationToken);
 
-            if (favorite == null)
+            if (favorite is null)
             {
                 favorite = new ArticleFavorite
                 {
@@ -58,7 +58,7 @@ public class Add
             }
 
             return new ArticleEnvelope(await _context.Articles.GetAllData()
-                .FirstOrDefaultAsync(x => x.ArticleId == article.ArticleId, cancellationToken));
+                .FirstAsync(x => x.ArticleId == article.ArticleId, cancellationToken));
         }
     }
 }

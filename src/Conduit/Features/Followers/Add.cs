@@ -45,7 +45,7 @@ public class Add
             }
 
             var observer =
-                await _context.Persons.FirstOrDefaultAsync(x => x.Username == _currentUserAccessor.GetCurrentUsername(),
+                await _context.Persons.FirstAsync(x => x.Username == _currentUserAccessor.GetCurrentUsername(),
                     cancellationToken);
 
             var followedPeople = await _context.FollowedPeople.FirstOrDefaultAsync(

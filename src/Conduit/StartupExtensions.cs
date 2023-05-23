@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Conduit.Infrastructure.Security;
@@ -55,10 +56,10 @@ public static class StartupExtensions
                 {
                     OnMessageReceived = context =>
                     {
-                        var token = context.HttpContext.Request.Headers["Authorization"];
-                        if (token.Count > 0 && token[0].StartsWith("Token ", StringComparison.OrdinalIgnoreCase))
+                        var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+                        if (token is not null && token.StartsWith("Token ", StringComparison.OrdinalIgnoreCase))
                         {
-                            context.Token = token[0].Substring("Token ".Length).Trim();
+                            context.Token = token["Token ".Length..].Trim();
                         }
 
                         return Task.CompletedTask;

@@ -40,20 +40,23 @@ public class Delete
 
             if (target == null)
             {
-                throw new RestException(HttpStatusCode.NotFound, new {User = Constants.NOT_FOUND});
+                throw new RestException(HttpStatusCode.NotFound, new { User = Constants.NOT_FOUND });
             }
 
             var observer =
                 await _context.Persons.FirstOrDefaultAsync(x => x.Username == _currentUserAccessor.GetCurrentUsername(),
                     cancellationToken);
 
-            var followedPeople = await _context.FollowedPeople.FirstOrDefaultAsync(
-                x => x.ObserverId == observer.PersonId && x.TargetId == target.PersonId, cancellationToken);
-
-            if (followedPeople != null)
+            if (observer is not null)
             {
-                _context.FollowedPeople.Remove(followedPeople);
-                await _context.SaveChangesAsync(cancellationToken);
+                var followedPeople = await _context.FollowedPeople.FirstOrDefaultAsync(
+                    x => x.ObserverId == observer.PersonId && x.TargetId == target.PersonId, cancellationToken);
+
+                if (followedPeople != null)
+                {
+                    _context.FollowedPeople.Remove(followedPeople);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
             }
 
             return await _profileReader.ReadProfile(message.Username, cancellationToken);

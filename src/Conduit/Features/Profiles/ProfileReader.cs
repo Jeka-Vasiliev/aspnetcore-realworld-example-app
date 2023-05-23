@@ -42,7 +42,7 @@ public class ProfileReader : IProfileReader
             var currentPerson = await _context.Persons
                 .Include(x => x.Following)
                 .Include(x => x.Followers)
-                .FirstOrDefaultAsync(x => x.Username == currentUserName, cancellationToken);
+                .FirstAsync(x => x.Username == currentUserName, cancellationToken);
 
             if (currentPerson.Followers.Any(x => x.TargetId == person.PersonId))
             {
